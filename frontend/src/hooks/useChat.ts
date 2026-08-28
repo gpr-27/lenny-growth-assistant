@@ -19,6 +19,11 @@ export function useChat(
   const isProcessingRef = useRef(false);
 
   useEffect(() => {
+    // If sessionId is the current actively streaming session, do not abort or wipe
+    if (sessionId === currentSessionId && currentSessionId !== null) {
+      return;
+    }
+
     // Abort any ongoing stream from previous session
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();

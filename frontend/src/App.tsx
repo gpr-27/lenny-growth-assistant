@@ -386,7 +386,8 @@ function App() {
         </header>
 
         {/* Dynamic Workspace: Artifacts Library vs Dual-Pane Chat Workspace */}
-        {currentTab === 'artifacts' ? (
+        {/* Artifacts Library Tab */}
+        <div className={`flex-1 min-h-0 flex overflow-hidden ${currentTab === 'artifacts' ? 'flex' : 'hidden'}`}>
           <ArtifactsLibrary 
             onOpenArtifact={(art) => {
               setActiveArtifact(art);
@@ -403,34 +404,35 @@ function App() {
               setCurrentTab('chat');
             }}
           />
-        ) : (
-          <div className="flex-1 min-h-0 flex overflow-hidden">
-            {/* Chat Panel */}
-            <div className={`flex-1 min-h-0 min-w-0 flex flex-col transition-all duration-300 ease-in-out ${
-              activeArtifact ? 'w-1/2 border-r border-slate-200 dark:border-slate-800' : 'w-full'
-            }`}>
-              <Chat 
-                messages={messages} 
-                loading={loading} 
-                onSendMessage={sendMessage}
-                onArtifactClick={(artifact) => setActiveArtifact(artifact)}
-                messageQueue={messageQueue}
-                onRemoveFromQueue={removeFromQueue}
-                onClearQueue={clearQueue}
-              />
-            </div>
-            
-            {/* Artifact Viewer Panel */}
-            {activeArtifact && (
-              <div className="w-1/2 min-h-0 min-w-0 bg-slate-50 dark:bg-slate-900/50 overflow-hidden flex flex-col relative z-20 shadow-[-10px_0_25px_-5px_rgba(0,0,0,0.1)] transition-all duration-300">
-                 <ArtifactViewer 
-                   artifact={activeArtifact} 
-                   onClose={() => setActiveArtifact(null)} 
-                 />
-              </div>
-            )}
+        </div>
+
+        {/* Dual-Pane Chat & Artifact Viewer Workspace */}
+        <div className={`flex-1 min-h-0 flex overflow-hidden ${currentTab === 'chat' ? 'flex' : 'hidden'}`}>
+          {/* Chat Panel */}
+          <div className={`flex-1 min-h-0 min-w-0 flex flex-col transition-all duration-300 ease-in-out ${
+            activeArtifact ? 'w-1/2 border-r border-slate-200 dark:border-slate-800' : 'w-full'
+          }`}>
+            <Chat 
+              messages={messages} 
+              loading={loading} 
+              onSendMessage={sendMessage}
+              onArtifactClick={(artifact) => setActiveArtifact(artifact)}
+              messageQueue={messageQueue}
+              onRemoveFromQueue={removeFromQueue}
+              onClearQueue={clearQueue}
+            />
           </div>
-        )}
+          
+          {/* Artifact Viewer Panel */}
+          {activeArtifact && (
+            <div className="w-1/2 min-h-0 min-w-0 bg-slate-50 dark:bg-slate-900/50 overflow-hidden flex flex-col relative z-20 shadow-[-10px_0_25px_-5px_rgba(0,0,0,0.1)] transition-all duration-300">
+               <ArtifactViewer 
+                 artifact={activeArtifact} 
+                 onClose={() => setActiveArtifact(null)} 
+               />
+            </div>
+          )}
+        </div>
       </main>
 
       {/* Custom Model Dialog */}

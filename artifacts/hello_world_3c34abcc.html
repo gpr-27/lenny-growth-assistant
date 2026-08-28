@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello World</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+        }
+        
+        p {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .metric-card-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+        
+        .metric-card {
+            background-color: #f7f7f7;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .metric-card h2 {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .metric-card p {
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hello World!</h1>
+    <p>This is a simple HTML file that displays the text "Hello World!".</p>
+
+    <div class="metric-card-grid">
+        <div class="metric-card">
+            <h2>Monthly Active Users: 1.4M</h2>
+            <p>As of today, we have approximately 1.4 million monthly active users.</p>
+        </div>
+        
+        <div class="metric-card">
+            <h2>Net Revenue Retention: 124%</h2>
+            <p>Our net revenue retention rate is an impressive 124% as of today.</p>
+        </div>
+        
+        <div class="metric-card">
+            <h2>Customer Acquisition Cost: $42</h2>
+            <p>The customer acquisition cost for our product is currently $42 per user.</p>
+        </div>
+    </div>
+
+    <div class="metric-card-grid">
+        <div class="metric-card">
+            <h2>Breakdown Table</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Users</td>
+                        <td>1.4M</td>
+                    </tr>
+                    <tr>
+                        <td>Revenue Retention</td>
+                        <td>124%</td>
+                    </tr>
+                    <tr>
+                        <td>Customer Acquisition Cost</td>
+                        <td>$42</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="metric-card">
+            <h2>Key Growth Insights</h2>
+            <p>We're seeing significant growth in our user base and revenue retention.</p>
+        </div>
+    </div>
+
+    <button id="export-report">Export Report</button>
+
+    <script>
+        const exportReportButton = document.getElementById('export-report');
+        
+        exportReportButton.addEventListener('click', () => {
+            // TO DO: Implement data export functionality
+            console.log('Exporting report... ');
+        });
+    </script>
+</body>
+</html>
