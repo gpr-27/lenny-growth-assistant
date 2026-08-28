@@ -308,9 +308,9 @@ def call_openai_stream(system_prompt: str, user_prompt: str, history: List[Dict[
         if chunk.choices[0].delta.content is not None:
             yield chunk.choices[0].delta.content
 
-def extract_artifacts(raw_text: str) -> Tuple[str, List[Dict[str, str]]]:
+def extract_artifacts(raw_text: str, is_ship30: bool = False) -> Tuple[str, List[Dict[str, str]]]:
     """
-    Extracts HTML and Markdown artifacts from fenced codeblocks.
+    Extracts HTML and Markdown artifacts from fenced codeblocks or structured essay generations.
     Returns (cleaned_chat_text, list_of_artifacts).
     """
     artifacts = []
@@ -377,6 +377,16 @@ def extract_artifacts(raw_text: str) -> Tuple[str, List[Dict[str, str]]]:
                 "content": code
             })
             cleaned_text = cleaned_text.replace(match.group(0), "").strip()
+
+    # 3. If Ship 30 essay is requested and not already wrapped in a codeblock, create a Markdown artifact
+    if is_ship30 and not artifacts and len(raw_text.strip()) > 80:
+        title_match = re.search(r"^#\s+(.+)$", raw_text, re.MULTILINE)
+        title = title_match.group(1).strip() if title_match else "Ship 30 Retention Framework"
+        artifacts.append({
+            "type": "markdown",
+            "title": title[:40],
+            "content": raw_text.strip()
+        })
 
     if artifacts:
         if not cleaned_text:
@@ -524,7 +534,7 @@ def run_agent_stream(message: str, session_id, db: Session, provider: str = "oll
     }))
 
     # 5. Extract Artifacts & Clean Chat Output
-    cleaned_text, artifacts = extract_artifacts(full_response)
+    cleaned_text, artifacts = extract_artifacts(full_response, is_ship30=is_ship30)
 
     yield {
         "type": "done",
