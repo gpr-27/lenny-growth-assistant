@@ -24,6 +24,7 @@ services:
     volumes:
       - ./backend:/app
       - ./ingestion:/app/ingestion
+      - ./artifacts:/app/artifacts
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/lennyapp
       - OLLAMA_BASE_URL=http://host.docker.internal:11434

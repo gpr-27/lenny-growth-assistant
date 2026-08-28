@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Growth Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs tailwindcss/2.2.19/tailwind.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        
+        .metric-card-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+        
+        .metric-card {
+            background-color: #f7f7f7;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .metric-card h2 {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .metric-card p {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .metric-card button {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .metric-card button:hover {
+            background-color: #3e8e41;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Growth Dashboard</h1>
+        <p>Tracking key metrics for growth teams to optimize their work.</p>
+        <button id="export-report">Export Report</button>
+    </header>
+    
+    <div class="metric-card-grid">
+        <div class="metric-card">
+            <h2>Monthly Active Users (MAU)</h2>
+            <p>1.4M (+18.2%)</p>
+            <button id="mau-button">View Chart</button>
+        </div>
+        
+        <div class="metric-card">
+            <h2>Net Revenue Retention (NRR)</h2>
+            <p>124%</p>
+            <button id="nrr-button">View Chart</button>
+        </div>
+        
+        <div class="metric-card">
+            <h2>Customer Acquisition Cost (CAC)</h2>
+            <p>$42</p>
+            <button id="cac-button">View Chart</button>
+        </div>
+    </div>
+    
+    <script>
+        const exportReportButton = document.getElementById('export-report');
+        const mauButton = document.getElementById('mau-button');
+        const nrrButton = document.getElementById('nrr-button');
+        const cacButton = document.getElementById('cac-button');
+        
+        mauButton.addEventListener('click', () => {
+            const chartData = {
+                labels: ['Month 1', 'Month 2', 'Month 3'],
+                datasets: [{
+                    label: 'MAU',
+                    data: [1000, 1200, 1500],
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            };
+            
+            const ctx = document.getElementById('mau-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: chartData,
+                options: {
+                    title: {
+                        display: true,
+                        text: 'Monthly Active Users'
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+        });
+        
+        nrrButton.addEventListener('click', () => {
+            const chartData = {
+                labels: ['Month 1', 'Month 2', 'Month 3'],
+                datasets: [{
+                    label: 'NRR',
+                    data: [0.8, 0.9, 1.1],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            };
+            
+            const ctx = document.getElementById('nrr-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: chartData,
+                options: {
+                    title: {
+                        display: true,
+                        text: 'Net Revenue Retention'
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+        });
+        
+        cacButton.addEventListener('click', () => {
+            const chartData = {
+                labels: ['Month 1', 'Month 2', 'Month 3'],
+                datasets: [{
+                    label: 'CAC',
+                    data: [100, 120, 150],
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            };
+            
+            const ctx = document.getElementById('cac-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: chartData,
+                options: {
+                    title: {
+                        display: true,
+                        text: 'Customer Acquisition Cost'
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+        });
+    </script>
+    
+    <div id="mau-chart"></div>
+    <div id="nrr-chart"></div>
+    <div id="cac-chart"></div>
+</body>
+</html>

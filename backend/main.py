@@ -1,4 +1,5 @@
 import os
+import re
 import uuid
 import threading
 import logging
@@ -42,6 +43,25 @@ async def add_process_time_header(request: Request, call_next):
     response.headers["X-Process-Time"] = str(process_time)
     return response
 
+ARTIFACTS_DIR = os.getenv("ARTIFACTS_DIR", "/app/artifacts")
+os.makedirs(ARTIFACTS_DIR, exist_ok=True)
+
+def save_artifact_to_disk(art_id: uuid.UUID, art_type: str, title: str, content: str):
+    """Saves an artifact as an .html or .md file in the dedicated artifacts/ folder."""
+    try:
+        os.makedirs(ARTIFACTS_DIR, exist_ok=True)
+        ext = "html" if (art_type or "").lower() == "html" else "md"
+        safe_title = re.sub(r'[^a-zA-Z0-9_-]', '_', (title or "artifact").strip().lower())
+        safe_title = re.sub(r'_+', '_', safe_title).strip('_') or "artifact"
+        filename = f"{safe_title}_{str(art_id)[:8]}.{ext}"
+        filepath = os.path.join(ARTIFACTS_DIR, filename)
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write(content or "")
+        return filepath
+    except Exception as err:
+        logger.error(f"Failed to save artifact to disk: {err}")
+        return None
+
 def get_db():
     db = SessionLocal()
     try:
@@ -52,6 +72,15 @@ def get_db():
 @app.on_event("startup")
 def startup_event():
     init_db()
+    # Sync all existing artifacts from DB to the artifacts/ disk folder
+    try:
+        db = SessionLocal()
+        artifacts = db.query(Artifact).all()
+        for a in artifacts:
+            save_artifact_to_disk(a.id, a.type, a.title, a.content)
+        db.close()
+    except Exception as e:
+        logger.warning(f"Initial artifact disk sync notice: {e}")
 
 # --- Health & Observability Endpoints ---
 
@@ -210,6 +239,7 @@ def get_messages(session_id: uuid.UUID, db: DbSession = Depends(get_db)):
             "content": m.content,
             "artifacts": artifacts
         })
+    return result
 from sqlalchemy import text, func
 from datetime import datetime
 
@@ -371,7 +401,9 @@ def chat(session_id: uuid.UUID, req: ChatRequest, db: DbSession = Depends(get_db
                             content=a["content"]
                         )
                         db.add(art)
-                    db.commit()
+                        db.commit()
+                        db.refresh(art)
+                        save_artifact_to_disk(art.id, art.type, art.title, art.content)
 
         except ValueError as ve:
             yield f"data: {json.dumps({'type': 'error', 'error': str(ve)})}\n\n"
