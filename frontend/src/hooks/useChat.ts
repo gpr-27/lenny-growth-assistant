@@ -43,10 +43,13 @@ export function useChat(
       const res = await fetch(`${API_URL}/sessions/${id}/messages`);
       if (res.ok) {
         const data = await res.json();
-        setMessages(data);
+        setMessages(Array.isArray(data) ? data : []);
+      } else {
+        setMessages([]);
       }
     } catch (e) {
       console.error("Failed to fetch messages", e);
+      setMessages([]);
     }
   };
 

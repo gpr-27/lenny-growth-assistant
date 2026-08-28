@@ -112,6 +112,9 @@ export default function Chat({
     }
   ];
 
+  const safeMessages = Array.isArray(messages) ? messages : [];
+  const safeQueue = Array.isArray(messageQueue) ? messageQueue : [];
+
   return (
     <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950 relative overflow-hidden transition-colors duration-200 bg-grid-pattern ambient-glow">
       {/* Messages Scroll Area */}
@@ -120,7 +123,7 @@ export default function Chat({
         onScroll={handleScroll}
         className="flex-1 overflow-y-auto px-4 sm:px-6 md:px-8 py-6 space-y-6 relative z-10"
       >
-        {messages.length === 0 ? (
+        {safeMessages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center max-w-2xl mx-auto py-8 animate-fadeIn">
             {/* Ambient Hero Avatar */}
             <div className="relative mb-5">
@@ -169,7 +172,7 @@ export default function Chat({
             </div>
           </div>
         ) : (
-          messages.map((msg, i) => (
+          safeMessages.map((msg, i) => (
             <div 
               key={msg.id || i} 
               className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-fadeIn`}
@@ -347,14 +350,14 @@ export default function Chat({
       {/* Input Composer */}
       <div className="p-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800/80 shrink-0 transition-colors duration-200">
         {/* Message Queue Individual Rectangular Cards */}
-        {messageQueue && messageQueue.length > 0 && (
-          <div className="max-w-4xl mx-auto mb-2.5 space-y-1.5 animate-fadeIn">
-            <div className="flex items-center justify-between px-1 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-              <span className="flex items-center gap-1.5">
+        {safeQueue.length > 0 && (
+          <div className="max-w-4xl mx-auto mb-2.5 bg-indigo-50/90 dark:bg-indigo-950/70 border border-indigo-200/90 dark:border-indigo-800/80 rounded-2xl p-3 shadow-xs animate-fadeIn backdrop-blur-md">
+            <div className="flex items-center justify-between pb-2 mb-2 border-b border-indigo-200/50 dark:border-indigo-800/50">
+              <span className="text-xs font-bold text-indigo-700 dark:text-indigo-300 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-                <span>Queued Messages ({messageQueue.length}) — Auto-sends in order:</span>
+                <span>Queued Prompts ({safeQueue.length})</span>
               </span>
-              {messageQueue.length > 1 && onClearQueue && (
+              {safeQueue.length > 1 && onClearQueue && (
                 <button
                   type="button"
                   onClick={onClearQueue}
