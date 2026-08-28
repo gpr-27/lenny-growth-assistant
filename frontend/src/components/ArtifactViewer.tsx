@@ -62,8 +62,75 @@ export default function ArtifactViewer({ artifact, onClose }: ArtifactViewerProp
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
       <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
       <script>
-        // Intelligent Artifact Bootstrap, Chart Trajectory & Export Handler
-        window.addEventListener('DOMContentLoaded', function() {
+        // Robust Chart.js Initialization & Artifact Bootstrap
+        function initChart() {
+          var canvas = document.getElementById('growthTrajectoryCanvas');
+          if (!canvas) {
+            var chartContainer = document.getElementById('trajectoryChartContainer');
+            if (!chartContainer) {
+              chartContainer = document.createElement('div');
+              chartContainer.id = 'trajectoryChartContainer';
+              chartContainer.className = 'mt-8 p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm';
+              chartContainer.innerHTML = '<div class="flex items-center justify-between mb-4"><h3 style="margin:0; font-size:1.1rem; font-weight:700; color:#1e293b;">Growth & Retention Trajectory</h3><span style="font-size:0.75rem; font-weight:600; color:#6366f1; background:#eef2ff; padding:2px 8px; border-radius:9999px;">Live Chart.js</span></div><div style="position:relative; height:240px; width:100%;"><canvas id="growthTrajectoryCanvas"></canvas></div>';
+              var target = document.querySelector('section, main, .container') || document.body;
+              target.appendChild(chartContainer);
+            }
+            canvas = document.getElementById('growthTrajectoryCanvas');
+          }
+
+          if (!canvas) return;
+          if (canvas._chartInstance) return; // already initialized
+
+          if (typeof Chart === 'undefined') {
+            setTimeout(initChart, 80);
+            return;
+          }
+
+          try {
+            var ctx = canvas.getContext('2d');
+            canvas._chartInstance = new Chart(ctx, {
+              type: 'line',
+              data: {
+                labels: ['Month 1', 'Month 2', 'Month 3', 'Month 4', 'Month 5', 'Month 6'],
+                datasets: [
+                  {
+                    label: 'MoM User Growth Rate (%)',
+                    data: [12, 18, 28, 42, 65, 88],
+                    borderColor: '#4f46e5',
+                    backgroundColor: 'rgba(79, 70, 229, 0.12)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                  },
+                  {
+                    label: 'Cohort Retention (%)',
+                    data: [35, 42, 54, 68, 82, 94],
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.12)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                  }
+                ]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: { position: 'top' }
+                },
+                scales: {
+                  y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                  x: { grid: { display: false } }
+                }
+              }
+            });
+          } catch(err) {
+            console.warn('Chart initialization retry:', err);
+          }
+        }
+
+        function initDashboard() {
           try {
             // 1. Pre-populate dynamic metrics if empty
             if (typeof metrics !== 'undefined' && Array.isArray(metrics)) {
@@ -106,18 +173,6 @@ export default function ArtifactViewer({ artifact, onClose }: ArtifactViewerProp
             }
 
             // 4. Connect functional 'Export Report' button
-            var exportBtns = document.querySelectorAll('button#export-report, button[id*="export"], button:has-text("Export")');
-            if (!exportBtns.length) {
-              var allBtns = document.querySelectorAll('button');
-              allBtns.forEach(function(b) {
-                if (b.textContent && b.textContent.toLowerCase().indexOf('export') !== -1) {
-                  b.onclick = handleExport;
-                }
-              });
-            } else {
-              exportBtns.forEach(function(b) { b.onclick = handleExport; });
-            }
-
             function handleExport() {
               var csvContent = "data:text/csv;charset=utf-8," 
                 + "Metric,Value,Growth Rate,Benchmark\n"
@@ -134,62 +189,30 @@ export default function ArtifactViewer({ artifact, onClose }: ArtifactViewerProp
               document.body.removeChild(link);
             }
 
-            // 5. Render live Growth & Retention Trajectory Chart
-            var chartContainer = document.getElementById('trajectoryChartContainer');
-            if (!chartContainer) {
-              chartContainer = document.createElement('div');
-              chartContainer.id = 'trajectoryChartContainer';
-              chartContainer.className = 'mt-8 p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm';
-              chartContainer.innerHTML = '<div class="flex items-center justify-between mb-4"><h3 style="margin:0; font-size:1.1rem; font-weight:700; color:#1e293b;">Growth & Retention Trajectory</h3><span style="font-size:0.75rem; font-weight:600; color:#6366f1; background:#eef2ff; padding:2px 8px; border-radius:9999px;">Live Chart.js</span></div><div style="position:relative; height:240px; width:100%;"><canvas id="growthTrajectoryCanvas"></canvas></div>';
-              var target = document.querySelector('section, main, .container') || document.body;
-              target.appendChild(chartContainer);
-            }
-
-            var canvas = document.getElementById('growthTrajectoryCanvas');
-            if (canvas && typeof Chart !== 'undefined') {
-              var ctx = canvas.getContext('2d');
-              new Chart(ctx, {
-                type: 'line',
-                data: {
-                  labels: ['Month 1', 'Month 2', 'Month 3', 'Month 4', 'Month 5', 'Month 6'],
-                  datasets: [
-                    {
-                      label: 'MoM User Growth Rate (%)',
-                      data: [10, 14, 18, 26, 38, 52],
-                      borderColor: '#4f46e5',
-                      backgroundColor: 'rgba(79, 70, 229, 0.1)',
-                      borderWidth: 3,
-                      fill: true,
-                      tension: 0.4
-                    },
-                    {
-                      label: 'Cohort Retention (%)',
-                      data: [32, 38, 45, 62, 78, 92],
-                      borderColor: '#10b981',
-                      backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                      borderWidth: 3,
-                      fill: true,
-                      tension: 0.4
-                    }
-                  ]
-                },
-                options: {
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  plugins: {
-                    legend: { position: 'top' }
-                  },
-                  scales: {
-                    y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
-                    x: { grid: { display: false } }
-                  }
+            var exportBtns = document.querySelectorAll('button#export-report, button[id*="export"]');
+            if (!exportBtns.length) {
+              var allBtns = document.querySelectorAll('button');
+              allBtns.forEach(function(b) {
+                if (b.textContent && b.textContent.toLowerCase().indexOf('export') !== -1) {
+                  b.onclick = handleExport;
                 }
               });
+            } else {
+              exportBtns.forEach(function(b) { b.onclick = handleExport; });
             }
+
+            // 5. Trigger Chart rendering
+            initChart();
           } catch (e) {
             console.warn('Sandbox init notice:', e);
           }
-        });
+        }
+
+        window.addEventListener('DOMContentLoaded', initDashboard);
+        window.addEventListener('load', initDashboard);
+        setTimeout(initDashboard, 100);
+        setTimeout(initDashboard, 500);
+        setTimeout(initDashboard, 1200);
       </script>
       <style>
         body { 
